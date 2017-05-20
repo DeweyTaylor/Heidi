@@ -17,17 +17,13 @@
 #include "Editor.h"
 #include "Project.h"
 
-// View Predefinitions
+// Predefinitions
 class BTabView;
 class BTextView;
-class BOutlineListView;
+class BColumnListView;
 class BGroupLayout;
 class ShellView;
-
-// Window Predefinitions
 class BFilePanel;
-
-// Other Predefinitions
 class Project;
 
 
@@ -69,7 +65,7 @@ private:
 	BGroupLayout*			fRootLayout;
 	BToolBar*				fToolbar;
 
-	BOutlineListView*		fProjectTree;
+	BColumnListView*		fProjectTree;
 	Project*				fOpenProject;
 
 	BTabView*	  			fEditorsTabView;
