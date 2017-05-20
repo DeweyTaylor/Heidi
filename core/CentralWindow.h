@@ -9,6 +9,7 @@
 #include <FilePanel.h>
 #include <ObjectList.h>
 #include <Window.h>
+#include <ListView.h>
 
 #include <private/shared/ToolBar.h>
 
@@ -77,7 +78,7 @@ private:
 	BFilePanel*				fOpenPanel;
 
 	BTabView*	 	 		fOutputsTabView;
-	BTextView*				fBuildIssues;
+	BListView*				fBuildIssues;
 	ShellView*				fCompileOutput;
 	ShellView*				fAppOutput;
 };

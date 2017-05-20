@@ -54,17 +54,17 @@ CentralWindow::CentralWindow(BRect frame)
 
 	fProjectTree = new BOutlineListView("ProjectTree");
 	fEditorsTabView = new BTabView("EditorsTab");
-	fOutputsTabView = new BTabView("OutputTab");
+	fOutputsTabView = new BTabView("OutputTab");asdf
 
 	fEditorsTabView->SetTabWidth(B_WIDTH_FROM_WIDEST);
 	fOutputsTabView->SetTabWidth(B_WIDTH_FROM_WIDEST);
 
 	fCompileOutput = new ShellView(TR("Compile Output"), thisMsngr, CW_BUILD_FINISHED);
-	fBuildIssues = new BTextView(TR("Build Issues"));
+	fBuildIssues = new BListView(TR("Build Issues"));
 	fAppOutput = new ShellView(TR("App Output"), thisMsngr, CW_RUN_FINISHED);
 
 	fOutputsTabView->AddTab(fCompileOutput->ScrollView());
-	fOutputsTabView->AddTab(fBuildIssues);
+	fOutputsTabView->AddTab(new BScrollView("Build Issues", fBuildIssues, B_NAVIGABLE, true, true));
 	fOutputsTabView->AddTab(fAppOutput->ScrollView());
 
 	init_tool_bar_icons();
@@ -224,6 +224,17 @@ CentralWindow::MessageReceived(BMessage* msg)
 	}
 	break;
 
+	case ShellView::SV_ADD_ERROR:
+	{
+		BString str;
+		int idx = 0;
+		while (msg->FindString("item", idx, &str) == B_OK)
+		{
+			BStringItem* item = new BStringItem(str);
+			fBuildIssues->AddItem(item);
+			idx++;
+		}
+	} break;
 	default:
 		BWindow::MessageReceived(msg);
 	break;

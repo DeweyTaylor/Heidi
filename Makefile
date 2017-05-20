@@ -32,6 +32,7 @@ APP_MIME_SIG =
 SRCS = core/Main.cpp \
 	core/CentralWindow.cpp \
 	core/ShellView.cpp \
+	core/utils/gb_popen.cpp \
 	editors/Editor.cpp \
 	editors/EditorFactory.cpp \
 	editors/Code/CodeEditor.cpp \

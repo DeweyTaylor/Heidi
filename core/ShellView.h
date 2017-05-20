@@ -9,6 +9,9 @@
 #include <TextView.h>
 #include <ScrollView.h>
 #include <String.h>
+#include <StringList.h>
+
+#include "utils/gb_popen.h"
 
 // Predefinitions
 class ExecThread;
@@ -17,9 +20,11 @@ class ShellView : public BTextView {
 public:
 	// 'what' codes that are used internally by this class
 	enum WhatCodes {
-		SV_LAUNCH 	= 'svLA',
-		SV_DATA	 	= 'svDA',
-		SV_DONE	 	= 'svDO'
+		SV_LAUNCH 		= 'svLA',
+		SV_DATA		 	= 'svDA',
+		SV_ERROR		= 'svER',
+		SV_DONE	 		= 'svDO',
+		SV_ADD_ERROR	= 'svAE'
 	};
 
 					ShellView(const char* name, BMessenger msngr, uint32 what);

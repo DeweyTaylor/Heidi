@@ -26,7 +26,7 @@ private:
 ExecThread::ExecThread(BString command, BString dir, BMessenger msnger)
 	: BLooper(command.String())
 {
-	fCommand.SetToFormat("cd \"%s\" && %s 2>&1;", dir.String(), command.String());
+	fCommand.SetToFormat("cd \"%s\" && %s ;", dir.String(), command.String());
 	fMessenger = msnger;
 }
 
@@ -36,17 +36,47 @@ ExecThread::MessageReceived(BMessage* msg)
 {
 	switch (msg->what) {
 	case ShellView::SV_LAUNCH: {
-		FILE* fd = popen(fCommand.String(), "r");
-		if (fd != NULL) {
-			char buffer[BUF_SIZE];
-			BMessage* newMsg = new BMessage(ShellView::SV_DATA);
-			while (fgets(buffer, BUF_SIZE, fd)) {
+		FILE* fd;
+		FILE* fd2;
+		int result = gb_popen(fCommand.String(), fd, fd2);
+		bool fdopen = false;
+		bool fd2open = false;
+		if (fd != NULL)
+		{
+			fdopen = true;
+		}
+		if (fd2 != NULL)
+		{
+			fd2open = true;
+		}
+
+
+		char buffer[BUF_SIZE];
+		char buffer2[BUF_SIZE];
+		BString strerr = "";
+		while (fdopen || fd2open) {
+			if (fdopen && fgets(buffer, BUF_SIZE, fd)) {
+				BMessage* newMsg = new BMessage(ShellView::SV_DATA);
 				newMsg->RemoveName("data");
 				newMsg->AddString("data", BString(buffer, BUF_SIZE).String());
 				fMessenger.SendMessage(newMsg);
+			} else {
+				fdopen = false;
 			}
-			pclose(fd);
+			if (fd2open && fgets(buffer2, BUF_SIZE, fd2)) {
+				strerr << BString(buffer2, MIN(strlen(buffer2), BUF_SIZE));
+			} else {
+				fd2open = false;
+			}
 		}
+		if (strerr != "")
+		{
+			BMessage* newMsg = new BMessage(ShellView::SV_ERROR);
+			newMsg->AddString("data", strerr);
+			fMessenger.SendMessage(newMsg);
+		}
+		gb_pclose(fd);
+		gb_pclose(fd2);
 		// TODO: error handling
 		fMessenger.SendMessage(ShellView::SV_DONE);
 	} break;
@@ -91,6 +121,20 @@ ShellView::MessageReceived(BMessage* msg)
 			fScrollView->ScrollBar(B_VERTICAL)->GetRange(NULL, &max);
 			fScrollView->ScrollBar(B_VERTICAL)->SetValue(max);
 		}
+	} break;
+
+	case SV_ERROR: {
+		BString str;
+		msg->FindString("data", &str);
+		BStringList strlist;
+		if (!str.Split("\n", true, strlist))
+			break;
+		BMessage* newmsg = new BMessage(SV_ADD_ERROR);
+		for (int a = 0; a < strlist.CountStrings(); a++)
+		{
+			newmsg->AddString("item", strlist.StringAt(a));
+		}
+		fMessenger.SendMessage(newmsg);
 	} break;
 
 	case SV_DONE:
