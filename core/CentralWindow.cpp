@@ -59,7 +59,7 @@ CentralWindow::CentralWindow(BRect frame)
 	fProjectTree->AddColumn(new BStringColumn(TR("File"),
 		175, 10, 10000, 0), 0);
 	fEditorsTabView = new BTabView("EditorsTab");
-	fOutputsTabView = new BTabView("OutputTab");asdf
+	fOutputsTabView = new BTabView("OutputTab");
 
 	fEditorsTabView->SetTabWidth(B_WIDTH_FROM_WIDEST);
 	fOutputsTabView->SetTabWidth(B_WIDTH_FROM_WIDEST);
